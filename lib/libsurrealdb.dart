@@ -83,7 +83,7 @@ class SurrealLib {
   }
 }
 
-class Session implements Finalizable {
+class Session {
   Pointer<SurrealSession>? _sessionPtr;
 
   Session._(this._sessionPtr);

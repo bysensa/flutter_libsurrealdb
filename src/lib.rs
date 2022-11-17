@@ -1,4 +1,5 @@
-#[allow(dead_code)]
+mod session;
+mod store;
 
 use std::os::raw::{c_char};
 use std::ffi::{CString, CStr};
@@ -7,6 +8,8 @@ use lazy_static::lazy_static;
 use serde_json::json;
 use surrealdb::{Datastore, Session};
 use tokio::runtime::{Runtime, Builder};
+use crate::session::SurrealSession;
+use crate::store::SurrealDataStore;
 
 type Database = (Runtime, Datastore, Session);
 
@@ -54,44 +57,9 @@ pub extern fn rust_cstr_free(s: *mut c_char) {
     };
 }
 
-/// Surrealdb part
 
-pub struct SurrealSession {
-    session: Session,
-}
 
-impl SurrealSession {
-
-    fn for_kv() -> Self {
-        SurrealSession {session: Session::for_kv() }
-    }
-
-    fn for_ns<S>(ns: S) -> Self
-        where S: Into<String> + Clone, {
-        SurrealSession {session: Session::for_ns(ns) }
-    }
-
-    fn for_db<S>(ns: S, db: S) -> Self
-        where S: Into<String> + Clone, {
-        SurrealSession {session: Session::for_db(ns, db) }
-    }
-
-    fn for_sc<S>(ns: S, db: S, sc: S) -> Self
-        where S: Into<String> + Clone, {
-        SurrealSession {session: Session::for_sc(ns, db, sc) }
-    }
-
-    fn with_ns(mut self, ns: &str) -> Self {
-        self.session = self.session.with_ns(ns);
-        self
-    }
-
-    fn with_db(mut self, db: &str) -> Self {
-        self.session = self.session.with_db(db);
-        self
-    }
-}
-
+// Surreal Session
 #[no_mangle]
 pub extern "C" fn session_for_kv_new() -> *mut SurrealSession {
     Box::into_raw(Box::new(SurrealSession::for_kv()))
@@ -179,3 +147,23 @@ pub extern "C" fn session_free(ptr: *mut SurrealSession) {
         let _ = Box::from_raw(ptr);
     }
 }
+
+// // Surreal Datastore
+// #[no_mangle]
+// pub extern "C" fn datastore_memory_new() -> *mut SurrealDataStore {
+//     let ds = SurrealDataStore::memory();
+//     match ds {
+//         Ok(ds) => Box::into_raw(Box::new(ds)),
+//         Err(_) => {}
+//     }
+// }
+//
+// #[no_mangle]
+// pub extern "C" fn datastore_free(ptr: *mut SurrealDataStore) {
+//     if ptr.is_null() {
+//         return;
+//     }
+//     unsafe {
+//         let _ = Box::from_raw(ptr);
+//     }
+// }

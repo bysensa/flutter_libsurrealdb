@@ -1,8 +1,5 @@
 // NOTE: Append the lines below to ios/Classes/<your>Plugin.h
 
-/**
- * Surrealdb part
- */
 typedef struct SurrealSession SurrealSession;
 
 char *rust_greeting(const char *to);

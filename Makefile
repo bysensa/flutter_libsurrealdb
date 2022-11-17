@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := help
 PROJECTNAME=$(shell basename "$(PWD)")
-LIBNAME=lib$(PROJECTNAME)
-SOURCES=$(sort $(wildcard ./src/*.rs ./src/**/*.rs))
+LIBNAME=libsurrealdb
+#SOURCES=$(sort $(wildcard ./src/*.rs ./src/**/*.rs))
+SOURCES=$(sort $(wildcard ./src/lib.rs))
 
 OS_NAME=$(shell uname | tr '[:upper:]' '[:lower:]')
 PATH := $(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin:$(PATH)
@@ -160,6 +161,7 @@ prepare_toolchain:
 
 prepare_dependencies:
 	-brew install llvm
+	-cargo install cbindgen
 	-flutter pub run ffigen:setup -I/usr/local/opt/llvm/include -L/usr/local/opt/llvm/lib
 	-flutter pub add --dev ffigen
 	-flutter pub add ffi
